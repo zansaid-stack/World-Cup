@@ -137,7 +137,7 @@ export function FriendsClient({ currentUserId, following, feed }: Props) {
         {/* Activity feed */}
         <div className="space-y-3">
           <h2 className="text-lg font-bold text-foreground">
-            {feed.length > 0 ? "Friends' Activity" : "No activity yet"}
+            {feed.length > 0 ? "Friends&apos; Activity" : "No activity yet"}
           </h2>
           {feed.length === 0 && following.length === 0 && (
             <p className="text-sm text-muted-foreground">Follow some friends to see their match ratings here.</p>
