@@ -1,0 +1,167 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
+}
+
+model Country {
+  id             String  @id @default(uuid())
+  name           String
+  code           String  @unique // FIFA country code e.g. "USA", "BRA"
+  flag           String  // emoji flag e.g. "🇺🇸"
+  group          String? // "A" through "L"
+  confederation  String  // "UEFA", "CONMEBOL", etc.
+
+  homeMatches    Match[] @relation("homeCountry")
+  awayMatches    Match[] @relation("awayCountry")
+
+  @@map("countries")
+}
+
+model Match {
+  id              String   @id @default(uuid())
+  homeCountryId   String
+  awayCountryId   String
+  homeScore       Int?
+  awayScore       Int?
+  date            DateTime
+  venue           String?
+  city            String?
+  stage           String   // "Group Stage", "Round of 32", "Round of 16", "Quarterfinal", "Semifinal", "Third Place", "Final"
+  group           String?  // "A" through "L" (null for knockout)
+  matchday        Int?     // 1, 2, 3 for group stage
+  createdAt       DateTime @default(now())
+
+  homeCountry     Country  @relation("homeCountry", fields: [homeCountryId], references: [id])
+  awayCountry     Country  @relation("awayCountry", fields: [awayCountryId], references: [id])
+  reviews         Review[]
+  listItems       ListItem[]
+
+  @@index([date])
+  @@index([stage])
+  @@map("matches")
+}
+
+model User {
+  id          String   @id
+  username    String   @unique
+  displayName String?
+  avatarUrl   String?
+  bio         String?
+  createdAt   DateTime @default(now())
+
+  reviews     Review[]
+  likes       Like[]
+  comments    Comment[]
+  lists       List[]
+  following   Follow[]  @relation("follower")
+  followers   Follow[]  @relation("following")
+
+  @@map("users")
+}
+
+model Follow {
+  id          String   @id @default(uuid())
+  followerId  String
+  followingId String
+  createdAt   DateTime @default(now())
+
+  follower    User     @relation("follower",  fields: [followerId],  references: [id], onDelete: Cascade)
+  following   User     @relation("following", fields: [followingId], references: [id], onDelete: Cascade)
+
+  @@unique([followerId, followingId])
+  @@map("follows")
+}
+
+model Review {
+  id          String    @id @default(uuid())
+  userId      String
+  matchId     String
+  content     String    @db.Text
+  rating      Float
+  watchedDate DateTime?
+  spoiler     Boolean   @default(false)
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+
+  user        User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  match       Match     @relation(fields: [matchId], references: [id], onDelete: Cascade)
+  likes       Like[]
+  comments    Comment[]
+
+  @@unique([userId, matchId])
+  @@map("reviews")
+}
+
+model Like {
+  id        String   @id @default(uuid())
+  userId    String
+  reviewId  String
+  createdAt DateTime @default(now())
+
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  review    Review   @relation(fields: [reviewId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, reviewId])
+  @@map("likes")
+}
+
+model Comment {
+  id        String   @id @default(uuid())
+  userId    String
+  reviewId  String
+  content   String   @db.Text
+  createdAt DateTime @default(now())
+
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  review    Review   @relation(fields: [reviewId], references: [id], onDelete: Cascade)
+
+  @@map("comments")
+}
+
+model List {
+  id          String     @id @default(uuid())
+  userId      String
+  title       String
+  description String?    @db.Text
+  isPublic    Boolean    @default(true)
+  createdAt   DateTime   @default(now())
+  updatedAt   DateTime   @updatedAt
+
+  user        User       @relation(fields: [userId], references: [id], onDelete: Cascade)
+  items       ListItem[]
+  likes       ListLike[]
+
+  @@map("lists")
+}
+
+model ListItem {
+  id        String   @id @default(uuid())
+  listId    String
+  matchId   String
+  position  Int
+  note      String?  @db.Text
+  createdAt DateTime @default(now())
+
+  list      List     @relation(fields: [listId], references: [id], onDelete: Cascade)
+  match     Match    @relation(fields: [matchId], references: [id], onDelete: Cascade)
+
+  @@unique([listId, matchId])
+  @@map("list_items")
+}
+
+model ListLike {
+  id        String   @id @default(uuid())
+  userId    String
+  listId    String
+  createdAt DateTime @default(now())
+
+  list      List     @relation(fields: [listId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, listId])
+  @@map("list_likes")
+}

@@ -1,26 +1,61 @@
 @import "tailwindcss";
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
-}
-
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-}
-
-@media (prefers-color-scheme: dark) {
+@layer base {
   :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+    --background: 60 5% 96%;
+    --foreground: 0 0% 6%;
+    --card: 0 0% 92%;
+    --card-foreground: 0 0% 6%;
+    --popover: 0 0% 92%;
+    --popover-foreground: 0 0% 6%;
+    --primary: 142 72% 29%;
+    --primary-foreground: 0 0% 100%;
+    --secondary: 0 0% 87%;
+    --secondary-foreground: 0 0% 6%;
+    --muted: 0 0% 87%;
+    --muted-foreground: 0 0% 40%;
+    --accent: 0 0% 87%;
+    --accent-foreground: 0 0% 6%;
+    --destructive: 0 62% 50%;
+    --destructive-foreground: 0 0% 100%;
+    --border: 0 0% 80%;
+    --input: 0 0% 87%;
+    --ring: 142 72% 29%;
+    --radius: 0.5rem;
   }
+
+  * { box-sizing: border-box; border-color: hsl(var(--border)); }
+
+  body {
+    background-color: #B8D9F5;
+    color: hsl(var(--foreground));
+    font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", system-ui, sans-serif;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  ::-webkit-scrollbar { width: 6px; height: 6px; }
+  ::-webkit-scrollbar-track { background: #EBEBEB; }
+  ::-webkit-scrollbar-thumb { background: #CCCCCC; border-radius: 3px; }
+  ::-webkit-scrollbar-thumb:hover { background: #AAAAAA; }
+  ::selection { background-color: rgba(22, 163, 74, 0.2); }
 }
 
-body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+@layer utilities {
+  .bg-background { background-color: hsl(var(--background)); }
+  .bg-card { background-color: hsl(var(--card)); }
+  .bg-muted { background-color: hsl(var(--muted)); }
+  .bg-primary { background-color: hsl(var(--primary)); }
+  .bg-secondary { background-color: hsl(var(--secondary)); }
+  .text-foreground { color: hsl(var(--foreground)); }
+  .text-muted-foreground { color: hsl(var(--muted-foreground)); }
+  .text-primary { color: hsl(var(--primary)); }
+  .text-primary-foreground { color: hsl(var(--primary-foreground)); }
+  .border-border { border-color: hsl(var(--border)); }
+  .ring-ring { --tw-ring-color: hsl(var(--ring)); }
+  .text-gradient {
+    background: linear-gradient(135deg, #16a34a, #15803d);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
 }
