@@ -118,5 +118,33 @@ export function Navbar() {
         </div>
       </div>
     </header>
+
+      {/* Mobile bottom nav */}
+      <nav className="md:hidden fixed bottom-0 left-0 right-0 z-40 bg-[#faf8f0] border-t border-[#e0d9b8] flex items-center justify-around px-2 py-2">
+        {navLinks.map(({ href, label }) => (
+          <Link
+            key={href}
+            href={href}
+            className={cn(
+              "flex flex-col items-center gap-0.5 px-3 py-1 rounded-lg text-xs font-medium transition-colors",
+              pathname === href ? "text-green-600" : "text-muted-foreground"
+            )}
+          >
+            <span className="text-lg">
+              {href === "/" ? "🏠" : href === "/matches" ? "⚽" : href === "/badges" ? "🏅" : "👥"}
+            </span>
+            {label}
+          </Link>
+        ))}
+        {user && (
+          <Link
+            href={profile?.username ? `/profile/${profile.username}` : "#"}
+            className="flex flex-col items-center gap-0.5 px-3 py-1 rounded-lg text-xs font-medium text-muted-foreground"
+          >
+            <span className="text-lg">👤</span>
+            Profile
+          </Link>
+        )}
+      </nav>
   );
 }
